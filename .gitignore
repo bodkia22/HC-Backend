@@ -2,5 +2,6 @@ obj/
 .vs/
 bin/
 *.user
-YPS.WebUI.xml
+HC.WebUI.xml
 Migrations/
+.sln
