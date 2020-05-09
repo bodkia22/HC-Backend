@@ -9,7 +9,7 @@ namespace HC.WebUI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TestController : Controller
+    public class TestController : ControllerBase
     {
         readonly HCDbContext _context;
         public TestController(HCDbContext context)
@@ -24,7 +24,7 @@ namespace HC.WebUI.Controllers
         }
 
         [HttpGet("[action]")]
-        public IActionResult GetAllUsers()
+        public IActionResult GetAllCourses()
         {
             var res = _context.Courses.ToList();
             return Ok(res);

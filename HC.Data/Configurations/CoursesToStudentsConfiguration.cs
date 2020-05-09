@@ -15,13 +15,17 @@ namespace HC.Data.Configurations
 
             builder.HasOne(x => x.Course)
                 .WithMany(x => x.CoursesToStudents)
-                .HasForeignKey(x => x.CourseId)
-                .IsRequired();
+                .HasForeignKey(x => x.CourseId);
 
             builder.HasOne(x => x.Student)
                 .WithMany(x => x.CoursesToStudents)
                 .HasForeignKey(x => x.StudentId)
-                .IsRequired();
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasData(
+                new CourseToStudent { CourseId = 1, StudentId = 2 },
+                new CourseToStudent { CourseId = 3, StudentId = 2 }
+            );
         }
     }
 }

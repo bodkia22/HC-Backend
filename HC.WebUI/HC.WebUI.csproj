@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -15,6 +17,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HC.Business\HC.Business.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mapping\" />
   </ItemGroup>
 
 </Project>

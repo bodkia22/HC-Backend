@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HC.Business;
+using HC.Business.Interfaces;
 using HC.Data;
 using HC.Data.Entities;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using HC.Business.Services;
 
 namespace HC.WebUI
 {
@@ -40,6 +43,11 @@ namespace HC.WebUI
 
             services.AddIdentity<User, IdentityRole<int>>()
                 .AddEntityFrameworkStores<HCDbContext>();
+
+            services.AddAutoMapper();
+
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IAuthService, AuthService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
