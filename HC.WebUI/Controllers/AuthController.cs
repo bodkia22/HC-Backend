@@ -9,6 +9,7 @@ using HC.Data.Entities;
 using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NLog;
 
 namespace HC.WebUI.Controllers
 {
@@ -16,27 +17,46 @@ namespace HC.WebUI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        public readonly IAuthService _service;
-        public readonly UserManager<User> _manager;
-        public readonly IMapper _mapper;
+        private readonly IAuthService authService;
+        private readonly UserManager<User> UserManager;
+        private readonly IMapper _mapper;
+        private static Logger logger = LogManager.GetLogger("HCLoggerRule");
 
         public AuthController(IAuthService service, UserManager<User> manager, IMapper mapper)
         {
-            _service = service;
-            _manager = manager;
+            authService = service;
+            UserManager = manager;
             _mapper = mapper;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register([FromBody] UserForRegisterDto userForRegister)
         {
-            var createdUser = await _service.Register(userForRegister);
-            
-            if(!createdUser.Succeeded)
+            var createdUser = await authService.Register(userForRegister);
+
+            logger.Info("User was created.");
+            if (!createdUser.Succeeded)
+            {
+                logger.Info("User was not created.");
                 return BadRequest("User was not created");
+            }
 
             //return Ok($"User {userForRegister.NickName} created ");
-            return Ok(await _manager.FindByNameAsync(userForRegister.NickName)); //change in future
+            return Ok(await UserManager.FindByNameAsync(userForRegister.NickName)); //change in future
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult> Login([FromBody] UserLoginDto userToLogin)
+        {
+            var user = authService.Login(userToLogin);
+
+            if (user == null)
+                return BadRequest();
+
+            return Ok(new
+            {
+                token = user
+            });
         }
     }
 }
