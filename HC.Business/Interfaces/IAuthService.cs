@@ -10,5 +10,6 @@ namespace HC.Business.Interfaces
     public interface IAuthService
     {
         public Task<IdentityResult> Register(UserForRegisterDto userForRegister);
+        public Task<string> Login(UserLoginDto userForLogin);
     }
 }

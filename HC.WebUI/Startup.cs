@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using HC.Business;
 using HC.Business.Interfaces;
+using HC.Business.Models;
 using HC.Data;
 using HC.Data.Entities;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +18,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using HC.Business.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace HC.WebUI
 {
@@ -30,6 +34,7 @@ namespace HC.WebUI
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -42,16 +47,41 @@ namespace HC.WebUI
                     x => x.MigrationsAssembly("HC.Data")));
 
             services.AddIdentity<User, IdentityRole<int>>()
-                .AddEntityFrameworkStores<HCDbContext>();
+                .AddEntityFrameworkStores<HCDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddAutoMapper();
 
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IJwtFactory, JwtFactory>();
+
+            services.AddTransient<IEmailSenderService, EmailSenderService>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
+
+            var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
@@ -61,7 +91,7 @@ namespace HC.WebUI
 
             app.UseRouting();
 
-            app.UseAuthentication();    // подключение аутентификации
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
