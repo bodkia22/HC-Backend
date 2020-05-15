@@ -51,7 +51,7 @@ namespace HC.Business.Services
             return userCreated;
         }
 
-        public async Task<string> Login(UserLoginDto userForLogin)
+        public async Task<LoginViewModel> Login(UserLoginDto userForLogin)
         {
             //check for mail validation
 
@@ -66,7 +66,7 @@ namespace HC.Business.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, role[0]),
+                new Claim(ClaimTypes.Role, role.First()),
                 new Claim(ClaimTypes.Name, user.UserName),
             };
 
@@ -75,7 +75,12 @@ namespace HC.Business.Services
             if (!await _userManager.CheckPasswordAsync(user, userForLogin.Password))
                 return null;
 
-            return token;
+            return new LoginViewModel
+            {
+                JwtToken = token,
+                UserName = user.UserName,
+                Role = role.First()
+            };
         }
     }
 }

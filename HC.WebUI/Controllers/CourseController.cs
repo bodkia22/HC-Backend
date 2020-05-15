@@ -7,6 +7,7 @@ using AutoMapper.QueryableExtensions;
 using HC.Data;
 using HC.Data.Entities;
 using HC.WebUI.ViewModels.LoginViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,7 @@ namespace HC.WebUI.Controllers
     [ApiController]
     public class CourseController : ControllerBase
     {
-        readonly HCDbContext _context;
+        readonly IHCDbContext _context;
         private readonly IMapper _mapper;
         public CourseController(HCDbContext context, IMapper mapper)
         {
@@ -25,6 +26,7 @@ namespace HC.WebUI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "student")]
         public  async Task<ActionResult<List<GetAllCoursesViewModel>>> GetAllCourses()
         {
             var res = await _context.Courses.ToListAsync();

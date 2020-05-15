@@ -20,7 +20,7 @@ namespace HC.WebUI.ViewModels.LoginViewModels
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<UserForRegisterViewModel, UserForRegisterDto>();
+            profile.CreateMap<UserForRegisterDto, UserForRegisterViewModel>();
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -34,29 +35,30 @@ namespace HC.WebUI.Controllers
         {
             var createdUser = await authService.Register(userForRegister);
 
-            logger.Info("User was created.");
             if (!createdUser.Succeeded)
             {
-                logger.Info("User was not created.");
                 return BadRequest("User was not created");
             }
 
-            //return Ok($"User {userForRegister.NickName} created ");
-            return Ok(await UserManager.FindByNameAsync(userForRegister.NickName)); //change in future
+            return Ok($"User {userForRegister.NickName} created ");
         }
 
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] UserLoginDto userToLogin)
         {
-            var user = authService.Login(userToLogin);
-
-            if (user == null)
-                return BadRequest();
-
-            return Ok(new
+            try
             {
-                token = user
-            });
+                var response = await authService.Login(userToLogin);
+                return Ok(response);
+            }
+            catch (ValidationException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Invalid password ");
+            }
         }
     }
 }

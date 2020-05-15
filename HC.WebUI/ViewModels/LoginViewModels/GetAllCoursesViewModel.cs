@@ -18,7 +18,7 @@ namespace HC.WebUI.ViewModels.LoginViewModels
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<GetAllCoursesViewModel, Course>();
+            profile.CreateMap<Course, GetAllCoursesViewModel>();
         }
     }
 }

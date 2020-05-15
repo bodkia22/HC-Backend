@@ -39,7 +39,36 @@ namespace HC.WebUI
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "YPS API",
+                    Description = "A project  ASP.NET Core Web API",
+                    TermsOfService = new Uri("https://example.com/terms"),
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Team YPS",
+                        Email = string.Empty,
+                    },
+
+                });
+                c.AddSecurityDefinition("Bearer",
+                    new OpenApiSecurityScheme
+                    {
+                        Description = "JWT Authorization header using the Bearer scheme.",
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "bearer",
+                    });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement{
+                    {
+                        new OpenApiSecurityScheme{
+                            Reference = new OpenApiReference{
+                                Id = "Bearer",
+                                Type = ReferenceType.SecurityScheme
+                            }
+                        },new List<string>()
+                    }
+                });
             });
 
             services.AddDbContext<HCDbContext>(options =>
@@ -52,12 +81,16 @@ namespace HC.WebUI
 
             services.AddAutoMapper();
 
+            services.Configure<AuthMessageSenderOptions>(Configuration);
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IEmailSenderService, EmailSenderService>();
+
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IJwtFactory, JwtFactory>();
-
-            services.AddTransient<IEmailSenderService, EmailSenderService>();
-            services.Configure<AuthMessageSenderOptions>(Configuration);
+            
+            services.AddTransient<IStudentService, StudentService>();
 
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
 
@@ -81,7 +114,6 @@ namespace HC.WebUI
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>

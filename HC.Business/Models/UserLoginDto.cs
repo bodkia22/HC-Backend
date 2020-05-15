@@ -12,11 +12,5 @@ namespace HC.Business.Models
     {
         public string UserName { get; set; }
         public string Password { get; set; }
-
-        public void Mapping(Profile profile)
-        {
-            profile.CreateMap<UserLoginDto, User>()
-                .ForMember(x => x.UserName, opt => opt.MapFrom(x => x.UserName));
-        }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using HC.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -14,10 +16,16 @@ namespace HC.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseToStudent> CoursesToStudents { get; set; }
 
+        public Task<int> SaveChangesAsync()
+        {
+            return base.SaveChangesAsync();
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(HCDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
         }
+
     }
 }
