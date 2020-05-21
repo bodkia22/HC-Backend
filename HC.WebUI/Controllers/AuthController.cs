@@ -37,28 +37,33 @@ namespace HC.WebUI.Controllers
 
             if (!createdUser.Succeeded)
             {
-                return BadRequest("User was not created");
+                return BadRequest(createdUser);
             }
 
             return Ok($"User {userForRegister.NickName} created ");
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login([FromBody] UserLoginDto userToLogin)
+        public async Task<ActionResult<LoginViewModel>> Login([FromBody] UserLoginDto userToLogin)
         {
-            try
+            var response = await authService.Login(userToLogin);
+
+            if (response == null)
             {
-                var response = await authService.Login(userToLogin);
-                return Ok(response);
+                return BadRequest("Login failure. Invalid password or username");
             }
-            catch (ValidationException e)
-            {
-                return BadRequest(e.Message);
-            }
-            catch (Exception)
-            {
-                return BadRequest("Invalid password ");
-            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("confirmEmail")]
+        public async Task<IdentityResult> ConfirmEmail(int userId, string token)
+        {
+            var id = Convert.ToString(userId);
+            var userToConfirmEmail = await UserManager.FindByIdAsync(id);
+            var result = await UserManager.ConfirmEmailAsync(userToConfirmEmail, token);
+
+            return result;
         }
     }
 }

@@ -11,6 +11,7 @@ using HC.Business.Interfaces;
 using HC.Business.Models;
 using HC.Data.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace HC.Business.Services
@@ -37,29 +38,36 @@ namespace HC.Business.Services
             var userCreated = await _userManager.CreateAsync(userToCreate, userForRegister.Password);
 
             if (userCreated.Succeeded)
-                await _userManager.AddToRoleAsync(userToCreate, "student");
+            {
+                await _userManager.AddToRoleAsync(userToCreate, "student"); //added all send email
 
-            //confirmation 
-            var confirmationToken = _userManager.GenerateEmailConfirmationTokenAsync(userToCreate);
+                var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(userToCreate);
 
-            string confirmationLink = "http://localhost:4200/confirmation-link/" + confirmationToken;
+                string confirmationLink = $"http://localhost:5001/api/auth/confirmemail?userid={userToCreate.Id}&token={confirmationToken}";
 
-            await _mailSenderService.SendEmailAsync(userToCreate.Email, "Welcome to Honey Course! Confirm Your Email",
-                $"<h1>Welcome to Honey Course! Confirm Your Email {confirmationLink} </h1>");
-            //
-
+                await _mailSenderService.SendEmailAsync(userToCreate.Email, "Welcome to Honey Course! Confirm Your Email",
+                    $"<h1>Welcome to Honey Course! Confirm Your Email {confirmationLink} </h1>");
+            }
             return userCreated;
         }
 
         public async Task<LoginViewModel> Login(UserLoginDto userForLogin)
         {
-            //check for mail validation
+            var regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            User user;
 
-            var user = await  _userManager.FindByNameAsync(userForLogin.UserName);
-
-            if (user == null)
+            if (regex.IsMatch(userForLogin.UserName))
             {
-                throw new ValidationException();
+                user = await _userManager.FindByEmailAsync(userForLogin.UserName);
+            }
+            else
+            {
+                user = await  _userManager.FindByNameAsync(userForLogin.UserName);
+            }
+
+            if (!await _userManager.CheckPasswordAsync(user, userForLogin.Password) && user == null)
+            {
+                return null;
             }
 
             var role = await _userManager.GetRolesAsync(user);
@@ -71,9 +79,6 @@ namespace HC.Business.Services
             };
 
             var token = _jwtFactory.GenerateEncodedToken(claims);
-
-            if (!await _userManager.CheckPasswordAsync(user, userForLogin.Password))
-                return null;
 
             return new LoginViewModel
             {

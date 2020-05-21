@@ -19,11 +19,9 @@ namespace HC.WebUI.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IStudentService _service;
         public StudentController(IHttpContextAccessor httpContextAccessor, IStudentService service)
         {
-            _httpContextAccessor = httpContextAccessor;
             _service = service;
         }
 
@@ -31,7 +29,7 @@ namespace HC.WebUI.Controllers
         [Authorize(Roles = "student")]
         public async Task<ActionResult<SubscribeToCourseViewModel>> SubscribeToCourse([FromBody] SubscribeToCourseDto subscribeToCourse)
         {
-            int studentId = int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+            int studentId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             subscribeToCourse.StudentId = studentId;
 
             var res = await _service.SubscribeToCourse(subscribeToCourse);
