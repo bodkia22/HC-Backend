@@ -25,11 +25,6 @@ namespace HC.Business.Services
         public async Task<SubscribeToCourseViewModel> SubscribeToCourse(SubscribeToCourseDto subscribeToCourse)
         {
             var courseToStudent = _mapper.Map<CourseToStudent>(subscribeToCourse);
-            //var courseToStudent = new CourseToStudent
-            //{
-            //    CourseId = subscribeToCourse.CourseId,
-            //    StudentId = subscribeToCourse.StudentId
-            //};
 
             _context.CoursesToStudents.Add(courseToStudent);
 

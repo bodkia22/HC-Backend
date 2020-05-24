@@ -21,7 +21,7 @@ namespace HC.Data.Entities
 
         //TO DO: Delete set
         public DateTime RegisteredDate { get; set; } 
-
+        public string EmailConfirmationToken { get; set; }
         public HashSet<Course> Courses { get; set; }
         public HashSet<CourseToStudent> CoursesToStudents { get; set; }
     }

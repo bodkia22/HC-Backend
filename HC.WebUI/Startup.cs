@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation.AspNetCore;
 using HC.Business;
 using HC.Business.Interfaces;
 using HC.Business.Models;
@@ -35,8 +36,8 @@ namespace HC.WebUI
 
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddControllers();
+            services.AddControllers().AddFluentValidation(fvc =>
+                fvc.RegisterValidatorsFromAssemblyContaining<Startup>()); ;
 
             services.AddSwaggerGen(c =>
             {
@@ -94,11 +95,15 @@ namespace HC.WebUI
                     options.Password.RequireLowercase = false;
                     options.Password.RequireUppercase = false;
                     options.User.RequireUniqueEmail = true;
+                    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                    options.SignIn.RequireConfirmedEmail = true;
                 })
                 .AddEntityFrameworkStores<HCDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAutoMapper();
+            //Fluent valid
+            services.AddBusiness();
+            
 
             services.Configure<AuthMessageSenderOptions>(Configuration);
 

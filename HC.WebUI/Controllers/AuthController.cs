@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using HC.Business.Interfaces;
@@ -10,6 +12,7 @@ using HC.Data.Entities;
 using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using NLog;
 
 namespace HC.WebUI.Controllers
@@ -57,12 +60,13 @@ namespace HC.WebUI.Controllers
         }
 
         [HttpGet("confirmEmail")]
-        public async Task<IdentityResult> ConfirmEmail(int userId, string token)
+        public async Task<IdentityResult> ConfirmEmail(string userId, string token)
         {
-            var id = Convert.ToString(userId);
-            var userToConfirmEmail = await UserManager.FindByIdAsync(id);
-            var result = await UserManager.ConfirmEmailAsync(userToConfirmEmail, token);
+            var userToConfirmEmail = await UserManager.FindByIdAsync(userId);
 
+            token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+
+            var result = await UserManager.ConfirmEmailAsync(userToConfirmEmail, token);
             return result;
         }
     }

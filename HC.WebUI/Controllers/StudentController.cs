@@ -25,7 +25,7 @@ namespace HC.WebUI.Controllers
             _service = service;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         [Authorize(Roles = "student")]
         public async Task<ActionResult<SubscribeToCourseViewModel>> SubscribeToCourse([FromBody] SubscribeToCourseDto subscribeToCourse)
         {
