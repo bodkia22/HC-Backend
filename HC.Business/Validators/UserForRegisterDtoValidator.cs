@@ -39,9 +39,6 @@ namespace HC.Business.Validators
 
             RuleFor(x => x.DateOfBirth)
                 .NotEmpty();
-
-            RuleFor(x => x.EmailConfirmationToken)
-                .Null();
         }
 
         private bool RegexUserName(string nickName)

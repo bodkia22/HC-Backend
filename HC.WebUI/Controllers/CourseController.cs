@@ -29,7 +29,8 @@ namespace HC.WebUI.Controllers
         [Authorize(Roles = "student")]
         public  async Task<ActionResult<List<GetAllCoursesViewModel>>> GetAllCourses()
         {
-            var res = await _context.Courses.ToListAsync();
+            //var res = await _context.Courses.ToListAsync();
+            var res = await _context.Courses.ProjectTo<GetAllCoursesViewModel>(_mapper.ConfigurationProvider).ToListAsync();
 
             return Ok(res);
         }

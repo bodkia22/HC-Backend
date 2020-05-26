@@ -25,15 +25,13 @@ namespace HC.Business.Services
         private readonly IMapper _mapper;
         private readonly IEmailSenderService _mailSenderService;
         private readonly IJwtFactory _jwtFactory;
-        private readonly IHCDbContext _context;
 
-        public AuthService(UserManager<User> userManager, IMapper mapper, IEmailSenderService mailSenderService, IJwtFactory jwtFactory, HCDbContext context)
+        public AuthService(UserManager<User> userManager, IMapper mapper, IEmailSenderService mailSenderService, IJwtFactory jwtFactory)
         {
             _userManager = userManager;
             _mapper = mapper;
             _mailSenderService = mailSenderService;
             _jwtFactory = jwtFactory;
-            _context = context;
         }
 
         public async Task<IdentityResult> Register(UserForRegisterDto userForRegister)
@@ -47,6 +45,7 @@ namespace HC.Business.Services
                 await _userManager.AddToRoleAsync(userToCreate, "student"); //added all send email
 
                 var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(userToCreate);
+
                 confirmationToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(confirmationToken));
 
                 string confirmationLink = $"https://localhost:5001/api/auth/confirmemail?userid={userToCreate.Id}&token={confirmationToken}";
@@ -54,8 +53,6 @@ namespace HC.Business.Services
                 await _mailSenderService.SendEmailAsync(userToCreate.Email, "Welcome to Honey Course! Confirm Your Email",
                     $"<p>Welcome to Honey Course! Confirm Your Email <a href='{confirmationLink}'> Click here to confirm.</a> </p>");
             }
-
-            await _context.SaveChangesAsync();
             return userCreated;
         }
 

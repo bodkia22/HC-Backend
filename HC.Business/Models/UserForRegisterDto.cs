@@ -15,7 +15,6 @@ namespace HC.Business.Models
         public string LastName { get; set; }
         public string NickName { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public string EmailConfirmationToken { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<UserForRegisterDto, User>()

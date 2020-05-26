@@ -15,10 +15,5 @@ namespace HC.WebUI.ViewModels.LoginViewModels
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-
-        public void Mapping(Profile profile)
-        {
-            profile.CreateMap<Course, GetAllCoursesViewModel>();
-        }
     }
 }
