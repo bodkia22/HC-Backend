@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using AutoMapper;
 using HC.Business.Mapping;
 using HC.Data.Entities;
 
-namespace HC.Business.Models
+namespace HC.Business.Models.DTO
 {
     public class UserForRegisterDto : IMapFrom<User>
     {

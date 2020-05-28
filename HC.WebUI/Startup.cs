@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using FluentValidation.AspNetCore;
 using HC.Business;
 using HC.Business.Interfaces;
@@ -103,7 +104,6 @@ namespace HC.WebUI
 
             //Fluent valid
             services.AddBusiness();
-            
 
             services.Configure<AuthMessageSenderOptions>(Configuration);
 
@@ -112,7 +112,7 @@ namespace HC.WebUI
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IJwtFactory, JwtFactory>();
-            
+
             services.AddTransient<IStudentService, StudentService>();
 
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);

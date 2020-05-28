@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using HC.Business.Mapping;
 using HC.Data.Entities;
 
-namespace HC.Business.Models
+namespace HC.Business.Models.DTO
 {
     public class SubscribeToCourseDto : IMapFrom<CourseToStudent>
     {

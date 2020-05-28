@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HC.Business.Models
+﻿namespace HC.Business.Models.VM
 {
     public class LoginViewModel
     {

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using HC.Business.Mapping;
-using HC.Business.Models;
-using HC.Data.Entities;
+using HC.Business.Models.DTO;
 
-namespace HC.WebUI.ViewModels.LoginViewModels
+namespace HC.Business.Models.VM
 {
     public class UserForRegisterViewModel : IMapFrom<UserForRegisterDto>
     {

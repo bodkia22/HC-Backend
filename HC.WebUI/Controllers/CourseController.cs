@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using HC.Data;
-using HC.Data.Entities;
 using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,10 +24,10 @@ namespace HC.WebUI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "student")]
-        public  async Task<ActionResult<List<GetAllCoursesViewModel>>> GetAllCourses()
+        public  async Task<ActionResult<List<CourseViewModel>>> GetAllCourses()
         {
             //var res = await _context.Courses.ToListAsync();
-            var res = await _context.Courses.ProjectTo<GetAllCoursesViewModel>(_mapper.ConfigurationProvider).ToListAsync();
+            var res = await _context.Courses.ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider).ToListAsync();
 
             return Ok(res);
         }

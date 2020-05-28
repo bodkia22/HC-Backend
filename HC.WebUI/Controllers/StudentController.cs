@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using HC.Business.Interfaces;
 using HC.Business.Models;
+using HC.Business.Models.DTO;
+using HC.Business.Models.VM;
 using HC.Data;
 using HC.Data.Entities;
 using Microsoft.AspNetCore.Authorization;

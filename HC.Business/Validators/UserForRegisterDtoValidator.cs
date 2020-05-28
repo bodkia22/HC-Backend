@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using FluentValidation;
 using HC.Business.Models;
+using HC.Business.Models.DTO;
 
 namespace HC.Business.Validators
 {

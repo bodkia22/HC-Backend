@@ -25,8 +25,4 @@
     <ProjectReference Include="..\HC.Business\HC.Business.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Mapping\" />
-  </ItemGroup>
-
 </Project>

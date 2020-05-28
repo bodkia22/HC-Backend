@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using HC.Business.Models.VM;
 using HC.Data.Entities;
 using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -12,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HC.WebUI.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
@@ -30,8 +33,6 @@ namespace HC.WebUI.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user = await _userManager.FindByIdAsync(userId);
-
-            //mapp
 
             return Ok(_mapper.Map<UserViewModel>(user));
         }

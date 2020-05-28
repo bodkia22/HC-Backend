@@ -5,6 +5,7 @@ using System.Text;
 using AutoMapper;
 using FluentValidation;
 using HC.Business.Models;
+using HC.Business.Models.DTO;
 using HC.Business.Validators;
 using Microsoft.Extensions.DependencyInjection;
 

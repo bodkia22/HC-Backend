@@ -8,13 +8,12 @@ using HC.Data.Entities;
 
 namespace HC.WebUI.ViewModels.LoginViewModels
 {
-    public class UserViewModel : IMapFrom<User>
+    public class CourseViewModel : IMapFrom<Course>
     {
-        string NickName { get; set; }
+        public string Name { get; set; }
+        public string Info { get; set; }
 
-        public void Mapping(Profile profile)
-        {
-            profile.CreateMap<UserViewModel, User>();
-        }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }

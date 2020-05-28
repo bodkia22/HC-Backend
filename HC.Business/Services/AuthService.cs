@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using HC.Business.Interfaces;
 using HC.Business.Models;
+using HC.Business.Models.DTO;
+using HC.Business.Models.VM;
 using HC.Data;
 using HC.Data.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -48,7 +50,7 @@ namespace HC.Business.Services
 
                 confirmationToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(confirmationToken));
 
-                string confirmationLink = $"https://localhost:5001/api/auth/confirmemail?userid={userToCreate.Id}&token={confirmationToken}";
+                string confirmationLink = $"http://localhost:3000/confirmation/{userToCreate.Id}/{confirmationToken}";
 
                 await _mailSenderService.SendEmailAsync(userToCreate.Email, "Welcome to Honey Course! Confirm Your Email",
                     $"<p>Welcome to Honey Course! Confirm Your Email <a href='{confirmationLink}'> Click here to confirm.</a> </p>");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using FluentValidation;
 using HC.Business.Models;
+using HC.Business.Models.DTO;
 
 namespace HC.Business.Validators
 {

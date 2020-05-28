@@ -4,10 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using HC.Business.Interfaces;
 using HC.Business.Models;
+using HC.Business.Models.DTO;
+using HC.Business.Models.VM;
 using HC.Data.Entities;
 using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -60,14 +63,28 @@ namespace HC.WebUI.Controllers
         }
 
         [HttpGet("confirmEmail")]
-        public async Task<IdentityResult> ConfirmEmail(string userId, string token)
+        public async Task<ActionResult<IdentityResult>> ConfirmEmail(string userId, string token)
         {
             var userToConfirmEmail = await UserManager.FindByIdAsync(userId);
+            if (userToConfirmEmail == null)
+            {
+                return BadRequest();
+            }
 
-            token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+            var regex = new Regex("^[A-Za-z0-9_-]+$");
+            
+            if (regex.IsMatch(token))
+            {
+                token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+            }
 
             var result = await UserManager.ConfirmEmailAsync(userToConfirmEmail, token);
-            return result;
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
     }
 }
