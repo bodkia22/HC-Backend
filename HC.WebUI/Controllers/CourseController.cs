@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using HC.Business.Models.DTO;
 using HC.Data;
 using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -24,10 +26,20 @@ namespace HC.WebUI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "student")]
-        public  async Task<ActionResult<List<CourseViewModel>>> GetAllCourses()
+        public async Task<ActionResult<List<CourseViewModel>>> GetAllCourses()
         {
-            //var res = await _context.Courses.ToListAsync();
-            var res = await _context.Courses.ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider).ToListAsync();
+            var res = await _context.Courses.ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider)
+                .OrderBy(x => x.StartDate).ToListAsync();
+
+            return Ok(res);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "student")]
+        public async Task<ActionResult<CourseViewModel>> GetCourseByDate([FromBody] CourseByDateDto courseByDateDto)
+        {
+            var res = await _context.Courses.Where(x => x.StartDate >= courseByDateDto.DateOfCourse)
+                .ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider).OrderBy(x => x.StartDate).ToListAsync();
 
             return Ok(res);
         }

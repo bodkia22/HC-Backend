@@ -77,6 +77,15 @@ namespace HC.Business.Services
                 return null;
             }
 
+            var emailConfirmationStatus = await _userManager.IsEmailConfirmedAsync(user);
+            if (!emailConfirmationStatus)
+            {
+                return new LoginViewModel
+                {
+                    IsEmailConfirmed = false
+                };
+            }
+
             var role = await _userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
@@ -91,7 +100,8 @@ namespace HC.Business.Services
             {
                 JwtToken = token,
                 UserName = user.UserName,
-                Role = role.First()
+                Role = role.First(),
+                IsEmailConfirmed = true
             };
         }
     }

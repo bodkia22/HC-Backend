@@ -13,7 +13,14 @@ namespace HC.WebUI.ViewModels.LoginViewModels
         public string Name { get; set; }
         public string Info { get; set; }
 
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+
+        public void Mapping(Profile profile)
+        {
+            profile.CreateMap<Course, CourseViewModel>()
+                .ForMember(x => x.StartDate, opt => opt.MapFrom(x => x.StartDate.ToString("d")))
+                .ForMember(x => x.EndDate, opt => opt.MapFrom(x => x.EndDate.ToString("")));
+        }
     }
 }

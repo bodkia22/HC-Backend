@@ -46,7 +46,7 @@ namespace HC.WebUI.Controllers
                 return BadRequest(createdUser);
             }
 
-            return Ok($"User {userForRegister.NickName} created ");
+            return Ok($"User '{userForRegister.NickName}' created ");
         }
 
         [HttpPost("login")]

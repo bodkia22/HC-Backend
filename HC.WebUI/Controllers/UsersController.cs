@@ -4,12 +4,14 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using HC.Business.Models.VM;
 using HC.Data.Entities;
 using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HC.WebUI.Controllers
 {
@@ -35,6 +37,17 @@ namespace HC.WebUI.Controllers
             var user = await _userManager.FindByIdAsync(userId);
 
             return Ok(_mapper.Map<UserViewModel>(user));
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<UserWithFullInfoViewModel>> GetAllUsersWithFullInfo()
+        {
+            var users = await _userManager.Users
+                .ProjectTo<UserWithFullInfoViewModel>(_mapper.ConfigurationProvider)
+                .OrderBy(x => x.RegisteredDate).ToListAsync();
+
+            return Ok(users);
         }
     }
 

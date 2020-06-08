@@ -12,11 +12,12 @@ namespace HC.Business.Models.VM
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string NickName { get; set; }
-        public DateTime DateOfBirth;
+        public string DateOfBirth { get; set; }
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<UserForRegisterDto, UserForRegisterViewModel>();
+            profile.CreateMap<UserForRegisterDto, UserForRegisterViewModel>()
+                .ForMember(x => x.DateOfBirth, opt => opt.MapFrom(x => x.DateOfBirth.ToString("d")));
         }
     }
 
