@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation.AspNetCore;
+using Hangfire;
 using HC.Business;
 using HC.Business.Interfaces;
 using HC.Business.Models;
@@ -139,6 +140,8 @@ namespace HC.WebUI
                     x.AppSecret = "5157da7bcc92c670d4101047c1a9b29d";
                 });
 
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddHangfireServer();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -154,6 +157,8 @@ namespace HC.WebUI
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseHangfireDashboard();
 
             app.UseEndpoints(endpoints =>
             {

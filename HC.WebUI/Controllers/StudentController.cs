@@ -36,6 +36,11 @@ namespace HC.WebUI.Controllers
 
             var res = await _service.SubscribeToCourse(subscribeToCourse);
 
+            if (res == null)
+            {
+                return BadRequest();
+            }
+
             return Ok(res);
         }
     }

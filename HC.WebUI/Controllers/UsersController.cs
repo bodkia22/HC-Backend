@@ -7,7 +7,6 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using HC.Business.Models.VM;
 using HC.Data.Entities;
-using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +39,7 @@ namespace HC.WebUI.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("[action]")]
         public async Task<ActionResult<UserWithFullInfoViewModel>> GetAllUsersWithFullInfo()
         {
             var users = await _userManager.Users

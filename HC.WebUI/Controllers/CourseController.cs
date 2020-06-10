@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using HC.Business.Models.DTO;
+using HC.Business.Models.VM;
 using HC.Data;
-using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,24 +25,27 @@ namespace HC.WebUI.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [Authorize(Roles = "student")]
         public async Task<ActionResult<List<CourseViewModel>>> GetAllCourses()
         {
-            var res = await _context.Courses.ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider)
-                .OrderBy(x => x.StartDate).ToListAsync();
+            var res = await _context.Courses.OrderByDescending(x => x.Id)
+                .ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider)
+                .ToListAsync();
 
             return Ok(res);
         }
 
-        [HttpGet]
-        [Authorize(Roles = "student")]
-        public async Task<ActionResult<CourseViewModel>> GetCourseByDate([FromBody] CourseByDateDto courseByDateDto)
-        {
-            var res = await _context.Courses.Where(x => x.StartDate >= courseByDateDto.DateOfCourse)
-                .ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider).OrderBy(x => x.StartDate).ToListAsync();
+        //[HttpGet("[action]")]
+        //[Authorize(Roles = "student")]
+        //public async Task<ActionResult<CourseViewModel>> GetCourseByDate([FromBody] CourseByDateDto courseByDateDto)
+        //{
+        //    var res = await _context.Courses.Where(x => x.StartDate >= courseByDateDto.DateOfCourse)
+        //        .OrderBy(x => Convert.ToDateTime(x.StartDate))
+        //        .ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider)
+        //        .ToListAsync();
 
-            return Ok(res);
-        }
+        //    return Ok(res);
+        //}
     }
 }

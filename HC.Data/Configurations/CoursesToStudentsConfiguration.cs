@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using HC.Data.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +24,8 @@ namespace HC.Data.Configurations
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasData(
-                new CourseToStudent { CourseId = 1, StudentId = 2 },
-                new CourseToStudent { CourseId = 3, StudentId = 2 }
+                new CourseToStudent { CourseId = 1, StudentId = 2, StartDate = DateTime.Now.AddDays(31), EndDate = DateTime.Now.AddDays(44) },
+                new CourseToStudent { CourseId = 3, StudentId = 2, StartDate = DateTime.Now.AddDays(5), EndDate = DateTime.Now.AddDays(19) }
             );
         }
     }

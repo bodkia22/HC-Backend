@@ -35,9 +35,7 @@ namespace HC.Data.Configurations
                            " that yields accurate, generalized models and knowledge of the theory to solve specific types of ML problems." +
                            " You will experiment with end-to-end ML, starting from building an ML-focused strategy and progressing into model" +
                            " training, optimization, and productionalization with hands-on labs using Google Cloud Platform.",
-                    CreatorId = 1,
-                    StartDate = DateTime.Today.AddDays(30),
-                    EndDate = DateTime.Today.AddDays(60)
+                    CreatorId = 1
                 },
                 new Course
                 {
@@ -54,9 +52,7 @@ namespace HC.Data.Configurations
                            " marketplace connecting property - owner hosts with travelers to facilitate short - term rental transactions." +
                            "The top 10 Capstone completers each year will have the opportunity to present their work directly to senior data " +
                            "scientists at Airbnb live for feedback and discussion.",
-                    CreatorId = 1,
-                    StartDate = DateTime.Today.AddDays(10),
-                    EndDate = DateTime.Today.AddDays(40)
+                    CreatorId = 1
                 },
                 new Course
                 {
@@ -69,9 +65,7 @@ namespace HC.Data.Configurations
                            " at UCCS.“Unity” is a trademark or registered trademark of Unity Technologies or its affiliates in the U.S.and elsewhere." +
                            "The courses in this specialization are independent works and are not sponsored by, authorized by, or affiliated with Unity" +
                            " Technologies or its affiliates.",
-                    CreatorId = 1,
-                    StartDate = DateTime.Now.AddDays(1),
-                    EndDate = DateTime.Now.AddDays(11)
+                    CreatorId = 1
                 }
             );
         }

@@ -12,7 +12,6 @@ using HC.Business.Models;
 using HC.Business.Models.DTO;
 using HC.Business.Models.VM;
 using HC.Data.Entities;
-using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;

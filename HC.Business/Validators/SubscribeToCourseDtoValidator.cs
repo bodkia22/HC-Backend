@@ -18,10 +18,12 @@ namespace HC.Business.Validators
                 .WithMessage(x => $"Must be greater than 0, but was {x.CourseId}");
 
             RuleFor(x => x.StudentId)
-                .NotEmpty()
-                .WithMessage(x => $"Can't be {x.StudentId}")
-                .GreaterThan(0)
-                .WithMessage(x => $"Must be greater than 0, but was {x.StudentId}");
+                .Empty()
+                .WithMessage(x => $"StudentId should be empty. Not {x.StudentId}");
+
+            RuleFor(x => x.StartDate)
+                .GreaterThan(DateTime.Now)
+                .WithMessage(x => $"Start date must be greater than now, not {x.StartDate}");
         }
     }
 }

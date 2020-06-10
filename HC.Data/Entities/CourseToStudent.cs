@@ -12,5 +12,8 @@ namespace HC.Data.Entities
 
         public int StudentId { get; set; }
         public User Student { get; set; }
+
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 }
