@@ -19,6 +19,9 @@ namespace HC.Data.Configurations
             builder.HasMany(x => x.CoursesToStudents)
                 .WithOne(x => x.Course);
 
+            builder.Property(x => x.ImgUrl)
+                .IsRequired();
+
             builder.HasData(
                 new Course
                 {
@@ -35,7 +38,8 @@ namespace HC.Data.Configurations
                            " that yields accurate, generalized models and knowledge of the theory to solve specific types of ML problems." +
                            " You will experiment with end-to-end ML, starting from building an ML-focused strategy and progressing into model" +
                            " training, optimization, and productionalization with hands-on labs using Google Cloud Platform.",
-                    CreatorId = 1
+                    CreatorId = 1,
+                    ImgUrl = "https://www.essentialguru.org/wp-content/uploads/2020/04/Machine-Learning-with-TensorFlow-on-Google-Cloud-Platform-Review.png"
                 },
                 new Course
                 {
@@ -52,7 +56,8 @@ namespace HC.Data.Configurations
                            " marketplace connecting property - owner hosts with travelers to facilitate short - term rental transactions." +
                            "The top 10 Capstone completers each year will have the opportunity to present their work directly to senior data " +
                            "scientists at Airbnb live for feedback and discussion.",
-                    CreatorId = 1
+                    CreatorId = 1,
+                    ImgUrl = "https://smartprogress.do/uploadImages/001063504_l_crop.jpg"
                 },
                 new Course
                 {
@@ -65,7 +70,8 @@ namespace HC.Data.Configurations
                            " at UCCS.“Unity” is a trademark or registered trademark of Unity Technologies or its affiliates in the U.S.and elsewhere." +
                            "The courses in this specialization are independent works and are not sponsored by, authorized by, or affiliated with Unity" +
                            " Technologies or its affiliates.",
-                    CreatorId = 1
+                    CreatorId = 1,
+                    ImgUrl = "https://img-a.udemycdn.com/course/750x422/1399296_e175_3.jpg"
                 }
             );
         }

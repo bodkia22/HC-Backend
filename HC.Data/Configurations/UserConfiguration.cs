@@ -40,6 +40,7 @@ namespace HC.Data.Configurations
                     FirstName = "Bohdan",
                     LastName = "Borodulin",
                     Email = "bodkia2000@gmail.com",
+                    PhoneNumber = "0685701034",
                     PasswordHash = "qwerty",
                     DateOfBirth = new DateTime(2000, 4, 8),
                     RegisteredDate = DateTime.Now
@@ -51,6 +52,7 @@ namespace HC.Data.Configurations
                     FirstName = "Dariya",
                     LastName = "Misko",
                     Email = "dk@gmail.com",
+                    PhoneNumber = "0974570655",
                     PasswordHash = "qwerty",
                     DateOfBirth = new DateTime(2002, 7, 15),
                     RegisteredDate = DateTime.Now

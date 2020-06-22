@@ -85,5 +85,19 @@ namespace HC.WebUI.Controllers
             }
             return Ok(result);
         }
+
+        [HttpPost("facebookAuth")]
+        public async Task<ActionResult> Login([FromBody] FacebookLoginDto userFacebookLogin)
+        {
+            var authResponse = await authService.LoginWithFacebookAsync(userFacebookLogin.AccessToken);
+
+
+            if (authResponse == null)
+            {
+                return BadRequest("Login failure. Invalid password or username");
+            }
+
+            return Ok(authResponse);
+        }
     }
 }

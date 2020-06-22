@@ -27,13 +27,15 @@ namespace HC.Business.Services
         private readonly IMapper _mapper;
         private readonly IEmailSenderService _mailSenderService;
         private readonly IJwtFactory _jwtFactory;
+        private readonly IFacebookAuthService _facebookAuthService;
 
-        public AuthService(UserManager<User> userManager, IMapper mapper, IEmailSenderService mailSenderService, IJwtFactory jwtFactory)
+        public AuthService(UserManager<User> userManager, IMapper mapper, IEmailSenderService mailSenderService, IJwtFactory jwtFactory, IFacebookAuthService facebookAuthService)
         {
             _userManager = userManager;
             _mapper = mapper;
             _mailSenderService = mailSenderService;
             _jwtFactory = jwtFactory;
+            _facebookAuthService = facebookAuthService;
         }
 
         public async Task<IdentityResult> Register(UserForRegisterDto userForRegister)
@@ -101,7 +103,58 @@ namespace HC.Business.Services
                 JwtToken = token,
                 UserName = user.UserName,
                 Role = role.First(),
-                IsEmailConfirmed = true
+                IsEmailConfirmed = true,
+            };
+        }
+
+        public async Task<LoginViewModel> LoginWithFacebookAsync(string accessToken)
+        {
+            var validatedTokenResult = await _facebookAuthService.ValidateAccessTokenAsync(accessToken);
+
+            if (!validatedTokenResult.Data.IsValid)
+            {
+                //return null "Invalid facebook login"
+            }
+
+            var userInfo = await _facebookAuthService.GetUserInfoAsync(accessToken);
+
+            var identityUser = await _userManager.FindByEmailAsync(userInfo.Email);
+
+            if (identityUser == null)
+            {
+                identityUser = new User
+                {
+                    FirstName = userInfo.FirstName,
+                    LastName = userInfo.LastName,
+                    Email = userInfo.Email,
+                    UserName = userInfo.FirstName+userInfo.LastName, //user name can't be an email
+                    DateOfBirth = default(DateTime)
+                };
+
+                var createdResult = await _userManager.CreateAsync(identityUser);
+                if(!createdResult.Succeeded)
+                {
+                    return null;
+                }
+                await _userManager.AddToRoleAsync(identityUser, "student");
+            }
+
+            var role = await _userManager.GetRolesAsync(identityUser);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, identityUser.Id.ToString()),
+                new Claim(ClaimTypes.Role, role.First()),
+                new Claim(ClaimTypes.Name, identityUser.UserName),
+            };
+
+            var token = _jwtFactory.GenerateEncodedToken(claims);
+
+            return new LoginViewModel
+            {
+                IsEmailConfirmed = true,
+                JwtToken = token,
+                Role = role.First(),
+                UserName = identityUser.UserName
             };
         }
     }

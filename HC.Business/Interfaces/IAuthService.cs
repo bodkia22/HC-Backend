@@ -13,5 +13,6 @@ namespace HC.Business.Interfaces
     {
         public Task<IdentityResult> Register(UserForRegisterDto userForRegister);
         public Task<LoginViewModel> Login(UserLoginDto userForLogin);
+        public Task<LoginViewModel> LoginWithFacebookAsync(string accessToken);
     }
 }

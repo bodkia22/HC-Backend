@@ -13,10 +13,13 @@ namespace HC.Business.Models.DTO
         public string LastName { get; set; }
         public string NickName { get; set; }
         public DateTime DateOfBirth { get; set; }
+        public string PhoneNumber { get; set; }
+
         public void Mapping(Profile profile)
         {
             profile.CreateMap<UserForRegisterDto, User>()
-                .ForMember(x => x.UserName, opt => opt.MapFrom(x => x.NickName));
+                .ForMember(x => x.UserName, opt => opt.MapFrom(x => x.NickName))
+                .ForMember(x => x.PhoneNumber, opt => opt.MapFrom(x => x.PhoneNumber));
         }
     }
 }

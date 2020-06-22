@@ -38,6 +38,8 @@ namespace HC.WebUI
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient();
+
             services.AddControllers().AddFluentValidation(fvc =>
                 fvc.RegisterValidatorsFromAssemblyContaining<Startup>()); ;
 
@@ -107,14 +109,18 @@ namespace HC.WebUI
             services.AddBusiness();
 
             services.Configure<AuthMessageSenderOptions>(Configuration);
+            services.Configure<FacebookAuthSetting>(Configuration);
 
             services.AddTransient<IEmailSenderService, EmailSenderService>();
 
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IFacebookAuthService, FacebookAuthService>();
+            
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IJwtFactory, JwtFactory>();
 
             services.AddTransient<IStudentService, StudentService>();
+
 
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
 

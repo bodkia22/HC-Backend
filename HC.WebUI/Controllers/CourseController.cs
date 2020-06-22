@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -36,16 +38,39 @@ namespace HC.WebUI.Controllers
             return Ok(res);
         }
 
-        //[HttpGet("[action]")]
-        //[Authorize(Roles = "student")]
-        //public async Task<ActionResult<CourseViewModel>> GetCourseByDate([FromBody] CourseByDateDto courseByDateDto)
-        //{
-        //    var res = await _context.Courses.Where(x => x.StartDate >= courseByDateDto.DateOfCourse)
-        //        .OrderBy(x => Convert.ToDateTime(x.StartDate))
-        //        .ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider)
-        //        .ToListAsync();
+        [HttpGet("[action]")]
+        [Authorize(Roles = "student")]
+        public async Task<ActionResult<CourseViewModel>> GetById(int courseId)
+        {
+            var course = await _context.Courses.FindAsync(courseId);
 
-        //    return Ok(res);
-        //}
+            return _mapper.Map<CourseViewModel>(course);
+        }
+
+        [HttpGet("[action]")]
+        [Authorize(Roles = "student")]
+        public async Task<IActionResult> GetIsUserSubscribedToTheCourse(int courseId)
+        {
+            int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            if (await _context.CoursesToStudents.FirstOrDefaultAsync(x => x.CourseId == courseId && x.StudentId == userId) !=
+                null)
+            {
+                return Ok("User is subscribed to this course"); 
+            }
+
+            return BadRequest();
+        }
+
+        [HttpGet("[action]")]
+        [Authorize]
+        public async Task<ActionResult<CourseToStudentViewModel>> GetCoursesByStudentId(int userId)
+        {
+            var res = await _context.CoursesToStudents
+                .Where(x => x.StudentId == userId).ProjectTo<CourseToStudentViewModel>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+            
+            return Ok(res);
+        }
     }
 }

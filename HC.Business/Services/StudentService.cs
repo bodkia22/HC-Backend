@@ -37,13 +37,9 @@ namespace HC.Business.Services
         {
             var courseToStudent = _mapper.Map<CourseToStudent>(subscribeToCourse);
 
-            if (courseToStudent != null)
+            if (courseToStudent != null && _context.CoursesToStudents.FirstOrDefault(x =>
+                    x.CourseId == courseToStudent.CourseId && x.StudentId == courseToStudent.StudentId) == null)
             {
-                courseToStudent.StartDate = courseToStudent.StartDate.AddHours(courseToStudent.StartDate.Hour * (-1))
-                    .AddMinutes(courseToStudent.StartDate.Minute * (-1))
-                    .AddSeconds(courseToStudent.StartDate.Second * (-1))
-                    .AddMilliseconds(courseToStudent.StartDate.Millisecond * (-1));
-
                 _context.CoursesToStudents.Add(courseToStudent);
 
                 await _context.SaveChangesAsync();
