@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HC.Business.Services
 {
@@ -113,7 +114,7 @@ namespace HC.Business.Services
 
             if (!validatedTokenResult.Data.IsValid)
             {
-                //return null "Invalid facebook login"
+                return null;
             }
 
             var userInfo = await _facebookAuthService.GetUserInfoAsync(accessToken);
@@ -127,7 +128,7 @@ namespace HC.Business.Services
                     FirstName = userInfo.FirstName,
                     LastName = userInfo.LastName,
                     Email = userInfo.Email,
-                    UserName = userInfo.FirstName+userInfo.LastName, //user name can't be an email
+                    UserName = userInfo.FirstName+userInfo.LastName, 
                     DateOfBirth = default(DateTime)
                 };
 

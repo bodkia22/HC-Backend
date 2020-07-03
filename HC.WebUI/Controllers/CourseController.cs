@@ -9,7 +9,9 @@ using AutoMapper.QueryableExtensions;
 using HC.Business.Models.DTO;
 using HC.Business.Models.VM;
 using HC.Data;
+using HC.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,10 +23,12 @@ namespace HC.WebUI.Controllers
     {
         readonly IHCDbContext _context;
         private readonly IMapper _mapper;
-        public CourseController(HCDbContext context, IMapper mapper)
+        private readonly UserManager<User> _userManager;
+        public CourseController(HCDbContext context, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         [HttpGet("[action]")]
@@ -64,13 +68,33 @@ namespace HC.WebUI.Controllers
 
         [HttpGet("[action]")]
         [Authorize]
-        public async Task<ActionResult<CourseToStudentViewModel>> GetCoursesByStudentId(int userId)
+        public async Task<ActionResult<List<CourseToStudentViewModel>>> GetCoursesByStudentId(int userId)
         {
             var res = await _context.CoursesToStudents
-                .Where(x => x.StudentId == userId).ProjectTo<CourseToStudentViewModel>(_mapper.ConfigurationProvider)
+                .Where(x => x.StudentId == userId).OrderBy(x => x.StartDate).ProjectTo<CourseToStudentViewModel>(_mapper.ConfigurationProvider)
                 .ToListAsync();
             
             return Ok(res);
+        }
+
+        [HttpGet("[action]")]
+        [Authorize]
+        public async Task<ActionResult<CourseToStudentViewModel>> GetCoursesByStudentEmail(string email)
+        {
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                List<CourseToStudentViewModel> res = await _context.CoursesToStudents
+                    .Where(x => x.StudentId == user.Id).ProjectTo<CourseToStudentViewModel>(_mapper.ConfigurationProvider)
+                    .ToListAsync();
+
+                if (res.Count != 0)
+                {
+                    return Ok(res);
+                }
+            }
+            return BadRequest();
         }
     }
 }

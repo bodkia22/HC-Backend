@@ -19,7 +19,7 @@ namespace HC.Business.Models.VM
         public string DateOfBirth { get; set; }
         public string RegisteredDate { get; set; }
         public string PhoneNumber { get; set; }
-        public List<CourseViewModel> Courses { get; set; }
+
         public void Mapping(Profile profile)
         {
             profile.CreateMap<User, UserWithFullInfoViewModel>()
@@ -28,8 +28,7 @@ namespace HC.Business.Models.VM
                 .ForMember(x => x.DateOfBirth, opt =>
                     opt.MapFrom(x => x.DateOfBirth.ToString("d")))
                 .ForMember(x => x.NickName, opt => opt.MapFrom(x => x.UserName))
-                .ForMember(x => x.FullName, opt => opt.MapFrom(x => $"{x.FirstName} {x.LastName}"))
-                .ForMember(x => x.Courses, opt => opt.MapFrom(x => x.CoursesToStudents.Select(y => y.Course)));
+                .ForMember(x => x.FullName, opt => opt.MapFrom(x => $"{x.FirstName} {x.LastName}"));
         }
     }
 }

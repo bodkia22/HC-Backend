@@ -94,7 +94,7 @@ namespace HC.WebUI.Controllers
 
             if (authResponse == null)
             {
-                return BadRequest("Login failure. Invalid password or username");
+                return BadRequest("Login with Facebook was failed.");
             }
 
             return Ok(authResponse);
