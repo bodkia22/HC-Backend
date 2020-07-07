@@ -20,7 +20,7 @@ namespace HC.Business.Services
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
-        public UserService(HCDbContext context, UserManager<User> userManager, IMapper mapper)
+        public UserService(HCDbContext context, UserManager<User> userManager, IMapper mapper, IEmailSenderService mailService)
         {
             _userManager = userManager;
             _mapper = mapper;
@@ -43,11 +43,9 @@ namespace HC.Business.Services
                     .Where(x =>
                         x.UserName.ToLower().Contains(searchString) || x.FirstName.ToLower().Contains(searchString) ||
                         x.LastName.ToLower().Contains(searchString) || x.Email.ToLower().Contains(searchString) ||
-                        x.PhoneNumber.Contains(searchString)).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
+                        x.PhoneNumber.Contains(searchString));
 
-            pageInfo.Total = _userManager.Users.Count(x => x.UserName.ToLower().Contains(searchString) || x.FirstName.ToLower().Contains(searchString) ||
-                                                      x.LastName.ToLower().Contains(searchString) || x.Email.ToLower().Contains(searchString) ||
-                                                      x.PhoneNumber.Contains(searchString));
+            pageInfo.Total = res.Count();
 
             return res;
         }

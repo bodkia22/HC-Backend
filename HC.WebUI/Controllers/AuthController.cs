@@ -15,6 +15,7 @@ using HC.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.VisualBasic;
 using NLog;
 
 namespace HC.WebUI.Controllers
@@ -98,6 +99,33 @@ namespace HC.WebUI.Controllers
             }
 
             return Ok(authResponse);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult> PasswordRecover([FromBody] RecoveryPasswordDataDto data)
+        {
+            var res = await authService.SendPasswordRecoveryMessage(data.Data);
+
+            if (!res)
+            {
+                return BadRequest("User with this Email or User Name does not exist.");
+            }
+            return Ok();
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult<IdentityResult>> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            resetPasswordDto.ResetToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(resetPasswordDto.ResetToken));
+
+            var res = await authService.ChangePasswordByUserId(resetPasswordDto.UserId, resetPasswordDto.ResetToken, resetPasswordDto.NewPassword);
+
+            if (!res.Succeeded)
+            {
+                return BadRequest(res);
+            }
+
+            return Ok(res);
         }
     }
 }

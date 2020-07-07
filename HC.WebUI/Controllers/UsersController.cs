@@ -90,9 +90,8 @@ namespace HC.WebUI.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult<PaginationUsersViewModel>> GetSortedUsers(DataForUsersSortsDto data)
         {
-            IQueryable<User> res = null;
+            IQueryable<User> res = _userManager.Users;
 
-            var reverse = _userManager.Users.Reverse();
 
             var pageInfo = new PageInfo
             {
@@ -102,9 +101,10 @@ namespace HC.WebUI.Controllers
 
             if (pageInfo.Current == 0) //clear
             {
+                pageInfo.Total = res.Count();
                 pageInfo.Current = 1;
-                res = _userManager.Users.Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
-                pageInfo.Total = _userManager.Users.Count();
+
+                res = res.Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
 
                 return Ok(new PaginationUsersViewModel
                 {
@@ -119,49 +119,49 @@ namespace HC.WebUI.Controllers
             }
             else
             {
-                res = _userManager.Users.Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                 pageInfo.Total = _userManager.Users.Count();
             }
 
             switch ($"{data.Field} {data.Order}")
             {
                 case "id ascend":
-                    res = res.OrderBy(x => x.Id);
+                    res = res.OrderBy(x => x.Id).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "id descend":
-                    res = res.OrderByDescending(x => x.Id);
+                    res = res.OrderByDescending(x => x.Id).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "nickName ascend":
-                    res = res.OrderBy(x => x.UserName);
+                    res = res.OrderBy(x => x.UserName).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "nickName descend":
-                    res = res.OrderByDescending(x => x.UserName);
+                    res = res.OrderByDescending(x => x.UserName).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "email ascend":
-                    res = res.OrderBy(x => x.Email);
+                    res = res.OrderBy(x => x.Email).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "email descend":
-                    res = res.OrderByDescending(x => x.Email);
+                    res = res.OrderByDescending(x => x.Email).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "fullName ascend":
-                    res = res.OrderBy(x => x.FirstName).ThenBy(x => x.LastName);
+                    res = res.OrderBy(x => x.FirstName).ThenBy(x => x.LastName).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "fullName descend":
-                    res = res.OrderByDescending(x => x.FirstName).ThenBy(x => x.LastName);
+                    res = res.OrderByDescending(x => x.FirstName).ThenBy(x => x.LastName).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "dateOfBirth ascend":
-                    res = res.OrderBy(x => x.DateOfBirth);
+                    res = res.OrderBy(x => x.DateOfBirth).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "dateOfBirth descend":
-                    res = res.OrderByDescending(x => x.DateOfBirth);
+                    res = res.OrderByDescending(x => x.DateOfBirth).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "registeredDate ascend":
-                    res = res.OrderBy(x => x.RegisteredDate);
+                    res = res.OrderBy(x => x.RegisteredDate).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 case "registeredDate descend":
-                    res = res.OrderByDescending(x => x.RegisteredDate);
+                    res = res.OrderByDescending(x => x.RegisteredDate).Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
                 default:
+                    res = res.Skip((pageInfo.Current - 1) * pageInfo.PageSize).Take(pageInfo.PageSize);
                     break;
             }
 

@@ -158,5 +158,34 @@ namespace HC.Business.Services
                 UserName = identityUser.UserName
             };
         }
+
+        public async Task<bool> SendPasswordRecoveryMessage(string data)
+        {
+            var user = _userManager.Users.FirstOrDefault(x => x.UserName.Equals(data) || x.Email.Equals(data));
+
+            if (user != null)
+            {
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                resetToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(resetToken));
+
+                string confirmationLink = $"http://localhost:3000/password/recover/{user.Id}/{resetToken}";
+
+                await _mailSenderService.SendEmailAsync(user.Email,
+                    "Changing password Honey Course !",
+                    $"<p>Hey. If u want to change your password, go to <a href='{confirmationLink}'>link.</a></p>" +
+                    $"<p>if you don't know where this message is from just ignore it. Have a nice day.</p>");
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<IdentityResult> ChangePasswordByUserId(string userId, string token, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            return await _userManager.ResetPasswordAsync(user, token, newPassword);
+        }
     }
 }

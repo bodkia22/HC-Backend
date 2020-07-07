@@ -14,5 +14,7 @@ namespace HC.Business.Interfaces
         public Task<IdentityResult> Register(UserForRegisterDto userForRegister);
         public Task<LoginViewModel> Login(UserLoginDto userForLogin);
         public Task<LoginViewModel> LoginWithFacebookAsync(string accessToken);
+        public Task<bool> SendPasswordRecoveryMessage(string data);
+        public Task<IdentityResult> ChangePasswordByUserId(string userId, string token, string newPassword);
     }
 }
