@@ -43,7 +43,7 @@ namespace HC.Business.Services
                 _context.CoursesToStudents.Add(courseToStudent);
 
                 await _context.SaveChangesAsync();
-                 
+                
                 courseToStudent = await _context.CoursesToStudents
                     .Include(x => x.Course)
                     .Include(x => x.Student)
@@ -51,9 +51,11 @@ namespace HC.Business.Services
 
                 await _mailSenderService.SendEmailAsync(courseToStudent.Student.Email,
                     "You have been registered to the course !",
-                    $"<p>Congratulations, you have been successfully registered to " +
-                    $"the {courseToStudent.Course.Name}.</p>" +
-                    $"<p>This course will be available for you from {courseToStudent.StartDate:d} to {courseToStudent.EndDate:d}</p>");
+                    $"<h1>Hello, {courseToStudent.Student.UserName}</h1>"+
+                    "<h2>Congratulations, you have been successfully registered to " +
+                    $"the {courseToStudent.Course.Name}.</h2>" +
+                    $"<h2>This course will be available for you from {courseToStudent.StartDate:d} to {courseToStudent.EndDate:d}.</h2>"+
+                    "<h2>Have a nice day.</h2>");
 
                 var mouthDate = courseToStudent.StartDate.AddMonths(-1);
                 var weekDate = courseToStudent.StartDate.AddDays(-7);
@@ -64,9 +66,11 @@ namespace HC.Business.Services
                     BackgroundJob.Schedule(
                         () => _mailSenderService.SendEmailAsync(courseToStudent.Student.Email,
                             "Honey Courses, reminders about the upcoming course !",
-                            $"<p>Hi {courseToStudent.Student.UserName}, we'd like to remind you that you have exactly " +
-                            $"1 month before the start of the '{courseToStudent.Course.Name}' course.</p>" +
-                            $"<p>Course date: {courseToStudent.StartDate}</p>"),
+                            $"<h1>Hello, {courseToStudent.Student.UserName}</h1>" +
+                            $"<h2>Hi {courseToStudent.Student.UserName}, we'd like to remind you that you have exactly " +
+                            $"1 month before the start of the '{courseToStudent.Course.Name}' course.</h2>" +
+                            $"<h2>Course date: {courseToStudent.StartDate}.</h2>" +
+                            "<h2>Have a nice day.</h2>"),
                         mouthDate - DateTime.Today - DateTime.Now.TimeOfDay);
                 }
 
@@ -75,9 +79,11 @@ namespace HC.Business.Services
                     BackgroundJob.Schedule(
                         () => _mailSenderService.SendEmailAsync(courseToStudent.Student.Email,
                             "Honey Courses, reminders about the upcoming course !",
-                            $"<p>Hello again {courseToStudent.Student.UserName}, we want to remind you that your course" +
-                            $"'{courseToStudent.Course.Name}' will start in  1 week.</p>" +
-                            $"<p>Course date: {courseToStudent.StartDate}</p>"),
+                            $"<h1>Hello, {courseToStudent.Student.UserName}</h1>" +
+                            $"<h2>Hello again {courseToStudent.Student.UserName}, we want to remind you that your course" +
+                            $"'{courseToStudent.Course.Name}' will start in  1 week.</h2>" +
+                            $"<h2>Course date: {courseToStudent.StartDate}.</h2>" +
+                            "<h2>Have a nice day.</h2>"),
                         weekDate - DateTime.Today - DateTime.Now.TimeOfDay);
                 }
 
@@ -86,9 +92,11 @@ namespace HC.Business.Services
                     BackgroundJob.Schedule(
                         () => _mailSenderService.SendEmailAsync(courseToStudent.Student.Email,
                             "Honey Courses, reminders about the upcoming course !",
-                            $"<p>Hi {courseToStudent.Student.UserName}, we'd like to remind you that '{courseToStudent.Course.Name}'" +
-                            $" is going to start tomorrow.</p>" +
-                            $"<p>Course date: {courseToStudent.StartDate}</p>"),
+                            $"<h1>Hello, {courseToStudent.Student.UserName}</h1>" +
+                            $"<h2>Hi {courseToStudent.Student.UserName}, we'd like to remind you that '{courseToStudent.Course.Name}'" +
+                            $" is going to start tomorrow.</h2>" +
+                            $"<h2>Course date: {courseToStudent.StartDate}.</h2>" +
+                            "<h2>Have a nice day.</h2>"),
                         dayDate - DateTime.Today - DateTime.Now.TimeOfDay);
                 }
 

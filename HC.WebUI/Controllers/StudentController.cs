@@ -23,7 +23,7 @@ namespace HC.WebUI.Controllers
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _service;
-        public StudentController(IHttpContextAccessor httpContextAccessor, IStudentService service)
+        public StudentController(IStudentService service)
         {
             _service = service;
         }

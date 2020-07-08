@@ -36,7 +36,7 @@ namespace HC.Business.Validators
                 .NotEmpty()
                 .MinimumLength(8)
                 .MaximumLength(50)
-                .WithMessage("'Password' is required. Min length 8 - max 50");
+                .WithMessage("'Password' is required. Min length 8 - max 128");
 
             RuleFor(x => x.DateOfBirth)
                 .NotEmpty();

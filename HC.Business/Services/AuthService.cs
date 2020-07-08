@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -55,8 +56,11 @@ namespace HC.Business.Services
 
                 string confirmationLink = $"http://localhost:3000/confirmation/{userToCreate.Id}/{confirmationToken}";
 
-                await _mailSenderService.SendEmailAsync(userToCreate.Email, "Welcome to Honey Course! Confirm Your Email",
-                    $"<p>Welcome to Honey Course! Confirm Your Email <a href='{confirmationLink}'> Click here to confirm.</a> </p>");
+                await _mailSenderService.SendEmailAsync(userToCreate.Email,
+                    "Welcome to Honey Course! Confirm Your Email",
+                    $"<h1>Hello, {userToCreate.UserName}</h1>"+
+                    $"<h2>Welcome to Honey Course!<br>Confirm Your Email <a href='{confirmationLink}'>link</a> and start learning!</h2>"+
+                    "<h2>Have a nice day.</h2>");
             }
             return userCreated;
         }
@@ -72,7 +76,7 @@ namespace HC.Business.Services
             }
             else
             {
-                user = await  _userManager.FindByNameAsync(userForLogin.UserName);
+                user = await _userManager.FindByNameAsync(userForLogin.UserName);
             }
 
             if (!await _userManager.CheckPasswordAsync(user, userForLogin.Password) || user == null)
@@ -128,12 +132,12 @@ namespace HC.Business.Services
                     FirstName = userInfo.FirstName,
                     LastName = userInfo.LastName,
                     Email = userInfo.Email,
-                    UserName = userInfo.FirstName+userInfo.LastName, 
+                    UserName = userInfo.FirstName + userInfo.LastName,
                     DateOfBirth = default(DateTime)
                 };
 
                 var createdResult = await _userManager.CreateAsync(identityUser);
-                if(!createdResult.Succeeded)
+                if (!createdResult.Succeeded)
                 {
                     return null;
                 }
@@ -171,9 +175,11 @@ namespace HC.Business.Services
                 string confirmationLink = $"http://localhost:3000/password/recover/{user.Id}/{resetToken}";
 
                 await _mailSenderService.SendEmailAsync(user.Email,
-                    "Changing password Honey Course !",
-                    $"<p>Hey. If u want to change your password, go to <a href='{confirmationLink}'>link.</a></p>" +
-                    $"<p>if you don't know where this message is from just ignore it. Have a nice day.</p>");
+                        "Changing password Honey Course !",
+                        $"<h1>Hello, {user.UserName}!</h1>" +
+                    $"<h2>We've just received your password reset request.<br>So you can click <a href='{confirmationLink}'>here</a> and come up with new password.</h2>" +
+                    "<h3>If you don't know where this message from just ignore it.</h3>" +
+                    "<h3>Have a nice day.</h3>");
 
                 return true;
             }
@@ -186,6 +192,47 @@ namespace HC.Business.Services
             var user = await _userManager.FindByIdAsync(userId);
 
             return await _userManager.ResetPasswordAsync(user, token, newPassword);
+        }
+
+        public async Task<IdentityResult> ConfirmEmail(string userId, string token)
+        {
+            var userToConfirmEmail = await _userManager.FindByIdAsync(userId);
+            if (userToConfirmEmail == null)
+            {
+                return IdentityResult.Failed();
+            }
+
+            var regex = new Regex("^[A-Za-z0-9_-]+$");
+
+            if (regex.IsMatch(token))
+            {
+                token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+            }
+            else
+            {
+                return IdentityResult.Failed();
+            }
+
+            return await _userManager.ConfirmEmailAsync(userToConfirmEmail, token);
+        }
+
+        public async Task<IdentityResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var regex = new Regex("^[A-Za-z0-9_-]+$");
+
+            if (regex.IsMatch(resetPasswordDto.ResetToken))
+            {
+                resetPasswordDto.ResetToken =
+                    Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(resetPasswordDto.ResetToken));
+            }
+            else
+            {
+                return IdentityResult.Failed();
+            }
+
+            var res = await ChangePasswordByUserId(resetPasswordDto.UserId, resetPasswordDto.ResetToken, resetPasswordDto.NewPassword);
+
+            return res;
         }
     }
 }

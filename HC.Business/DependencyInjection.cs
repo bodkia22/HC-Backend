@@ -20,6 +20,10 @@ namespace HC.Business
             services.AddTransient<IValidator<SubscribeToCourseDto>, SubscribeToCourseDtoValidator>();
             services.AddTransient<IValidator<UserLoginDto>, UserLoginDtoValidator>();
             services.AddTransient<IValidator<UserForRegisterDto>, UserForRegisterDtoValidator>();
+            services.AddTransient<IValidator<ResetPasswordDto>, ResetPasswordDtoValidator>();
+            services.AddTransient<IValidator<RecoveryPasswordDataDto>, RecoveryPasswordDataDtoValidator>();
+            services.AddTransient<IValidator<FacebookLoginDto>, FacebookLoginDtoValidator>();
+            services.AddTransient<IValidator<DataForUsersSortDto>, DataForUsersSortDtoValidator>();
 
             return services;
         }

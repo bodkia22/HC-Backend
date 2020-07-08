@@ -120,7 +120,7 @@ namespace HC.WebUI
             services.AddTransient<IJwtFactory, JwtFactory>();
 
             services.AddTransient<IStudentService, StudentService>();
-
+            services.AddTransient<ICourseService, CourseService>();
 
             var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
 

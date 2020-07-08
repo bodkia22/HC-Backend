@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using HC.Business.Models.DTO;
+using HC.Business.Interfaces;
 using HC.Business.Models.VM;
-using HC.Data;
-using HC.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace HC.WebUI.Controllers
 {
@@ -21,23 +12,17 @@ namespace HC.WebUI.Controllers
     [ApiController]
     public class CourseController : ControllerBase
     {
-        readonly IHCDbContext _context;
-        private readonly IMapper _mapper;
-        private readonly UserManager<User> _userManager;
-        public CourseController(HCDbContext context, IMapper mapper, UserManager<User> userManager)
+        private readonly ICourseService _service;
+        public CourseController(ICourseService service)
         {
-            _context = context;
-            _mapper = mapper;
-            _userManager = userManager;
+            _service = service;
         }
 
         [HttpGet("[action]")]
         [Authorize(Roles = "student")]
         public async Task<ActionResult<List<CourseViewModel>>> GetAllCourses()
         {
-            var res = await _context.Courses.OrderByDescending(x => x.Id)
-                .ProjectTo<CourseViewModel>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+            var res = await _service.GetAllCourses();
 
             return Ok(res);
         }
@@ -46,9 +31,9 @@ namespace HC.WebUI.Controllers
         [Authorize(Roles = "student")]
         public async Task<ActionResult<CourseViewModel>> GetById(int courseId)
         {
-            var course = await _context.Courses.FindAsync(courseId);
+            var res = await _service.GetCourseById(courseId);
 
-            return _mapper.Map<CourseViewModel>(course);
+            return Ok(res);
         }
 
         [HttpGet("[action]")]
@@ -57,43 +42,36 @@ namespace HC.WebUI.Controllers
         {
             int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            if (await _context.CoursesToStudents.FirstOrDefaultAsync(x => x.CourseId == courseId && x.StudentId == userId) !=
-                null)
+            var res = await _service.GetIsUserSubscribedToTheCourse(courseId, userId);
+
+            if(!res)
             {
-                return Ok("User is subscribed to this course"); 
+                return BadRequest();
             }
 
-            return BadRequest();
+            return Ok("User is subscribed to this course");
         }
 
         [HttpGet("[action]")]
         [Authorize]
         public async Task<ActionResult<List<CourseToStudentViewModel>>> GetCoursesByStudentId(int userId)
         {
-            var res = await _context.CoursesToStudents
-                .Where(x => x.StudentId == userId).OrderBy(x => x.StartDate).ProjectTo<CourseToStudentViewModel>(_mapper.ConfigurationProvider)
-                .ToListAsync();
+            var res = await _service.GetCoursesByStudentId(userId);
             
             return Ok(res);
         }
 
         [HttpGet("[action]")]
         [Authorize]
-        public async Task<ActionResult<CourseToStudentViewModel>> GetCoursesByStudentEmail(string email)
+        public async Task<ActionResult<List<CourseToStudentViewModel>>> GetCoursesByStudentEmail(string email)
         {
+            var courses = await _service.GetCoursesByStudentEmail(email);
 
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user != null)
+            if (courses != null)
             {
-                List<CourseToStudentViewModel> res = await _context.CoursesToStudents
-                    .Where(x => x.StudentId == user.Id).ProjectTo<CourseToStudentViewModel>(_mapper.ConfigurationProvider)
-                    .ToListAsync();
-
-                if (res.Count != 0)
-                {
-                    return Ok(res);
-                }
+                return Ok(courses);
             }
+
             return BadRequest();
         }
     }

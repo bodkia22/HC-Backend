@@ -1,22 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using System.Threading.Tasks;
 using HC.Business.Interfaces;
-using HC.Business.Models;
 using HC.Business.Models.DTO;
 using HC.Business.Models.VM;
 using HC.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.VisualBasic;
-using NLog;
 
 namespace HC.WebUI.Controllers
 {
@@ -24,22 +12,17 @@ namespace HC.WebUI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService authService;
-        private readonly UserManager<User> UserManager;
-        private readonly IMapper _mapper;
-        private static Logger logger = LogManager.GetLogger("HCLoggerRule");
+        private readonly IAuthService _authService;
 
-        public AuthController(IAuthService service, UserManager<User> manager, IMapper mapper)
+        public AuthController(IAuthService service)
         {
-            authService = service;
-            UserManager = manager;
-            _mapper = mapper;
+            _authService = service;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register([FromBody] UserForRegisterDto userForRegister)
         {
-            var createdUser = await authService.Register(userForRegister);
+            var createdUser = await _authService.Register(userForRegister);
 
             if (!createdUser.Succeeded)
             {
@@ -52,7 +35,7 @@ namespace HC.WebUI.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoginViewModel>> Login([FromBody] UserLoginDto userToLogin)
         {
-            var response = await authService.Login(userToLogin);
+            var response = await _authService.Login(userToLogin);
 
             if (response == null)
             {
@@ -65,32 +48,19 @@ namespace HC.WebUI.Controllers
         [HttpGet("confirmEmail")]
         public async Task<ActionResult<IdentityResult>> ConfirmEmail(string userId, string token)
         {
-            var userToConfirmEmail = await UserManager.FindByIdAsync(userId);
-            if (userToConfirmEmail == null)
-            {
-                return BadRequest();
-            }
+            var res = await _authService.ConfirmEmail(userId, token);
 
-            var regex = new Regex("^[A-Za-z0-9_-]+$");
-            
-            if (regex.IsMatch(token))
+            if (!res.Succeeded)
             {
-                token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+                return BadRequest(res);
             }
-
-            var result = await UserManager.ConfirmEmailAsync(userToConfirmEmail, token);
-
-            if (!result.Succeeded)
-            {
-                return BadRequest(result);
-            }
-            return Ok(result);
+            return Ok(res);
         }
 
         [HttpPost("facebookAuth")]
         public async Task<ActionResult> Login([FromBody] FacebookLoginDto userFacebookLogin)
         {
-            var authResponse = await authService.LoginWithFacebookAsync(userFacebookLogin.AccessToken);
+            var authResponse = await _authService.LoginWithFacebookAsync(userFacebookLogin.AccessToken);
 
 
             if (authResponse == null)
@@ -104,21 +74,20 @@ namespace HC.WebUI.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult> PasswordRecover([FromBody] RecoveryPasswordDataDto data)
         {
-            var res = await authService.SendPasswordRecoveryMessage(data.Data);
+            var res = await _authService.SendPasswordRecoveryMessage(data.Data);
 
             if (!res)
             {
                 return BadRequest("User with this Email or User Name does not exist.");
             }
+
             return Ok();
         }
 
         [HttpPost("[action]")]
         public async Task<ActionResult<IdentityResult>> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
-            resetPasswordDto.ResetToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(resetPasswordDto.ResetToken));
-
-            var res = await authService.ChangePasswordByUserId(resetPasswordDto.UserId, resetPasswordDto.ResetToken, resetPasswordDto.NewPassword);
+            var res = await _authService.ResetPassword(resetPasswordDto);
 
             if (!res.Succeeded)
             {
