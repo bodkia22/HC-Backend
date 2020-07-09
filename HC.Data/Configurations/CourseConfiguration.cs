@@ -19,6 +19,9 @@ namespace HC.Data.Configurations
             builder.HasMany(x => x.CoursesToStudents)
                 .WithOne(x => x.Course);
 
+            builder.Property(x => x.ImgUrl)
+                .IsRequired();
+
             builder.HasData(
                 new Course
                 {
@@ -36,8 +39,7 @@ namespace HC.Data.Configurations
                            " You will experiment with end-to-end ML, starting from building an ML-focused strategy and progressing into model" +
                            " training, optimization, and productionalization with hands-on labs using Google Cloud Platform.",
                     CreatorId = 1,
-                    StartDate = DateTime.Today.AddDays(30),
-                    EndDate = DateTime.Today.AddDays(60)
+                    ImgUrl = "https://www.essentialguru.org/wp-content/uploads/2020/04/Machine-Learning-with-TensorFlow-on-Google-Cloud-Platform-Review.png"
                 },
                 new Course
                 {
@@ -55,8 +57,7 @@ namespace HC.Data.Configurations
                            "The top 10 Capstone completers each year will have the opportunity to present their work directly to senior data " +
                            "scientists at Airbnb live for feedback and discussion.",
                     CreatorId = 1,
-                    StartDate = DateTime.Today.AddDays(10),
-                    EndDate = DateTime.Today.AddDays(40)
+                    ImgUrl = "https://smartprogress.do/uploadImages/001063504_l_crop.jpg"
                 },
                 new Course
                 {
@@ -70,8 +71,7 @@ namespace HC.Data.Configurations
                            "The courses in this specialization are independent works and are not sponsored by, authorized by, or affiliated with Unity" +
                            " Technologies or its affiliates.",
                     CreatorId = 1,
-                    StartDate = DateTime.Now.AddDays(1),
-                    EndDate = DateTime.Now.AddDays(11)
+                    ImgUrl = "https://img-a.udemycdn.com/course/750x422/1399296_e175_3.jpg"
                 }
             );
         }

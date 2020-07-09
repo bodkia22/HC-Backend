@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using System.Threading.Tasks;
 using HC.Business.Interfaces;
-using HC.Business.Models;
+using HC.Business.Models.DTO;
+using HC.Business.Models.VM;
 using HC.Data.Entities;
-using HC.WebUI.ViewModels.LoginViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,27 +12,89 @@ namespace HC.WebUI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        public readonly IAuthService _service;
-        public readonly UserManager<User> _manager;
-        public readonly IMapper _mapper;
+        private readonly IAuthService _authService;
 
-        public AuthController(IAuthService service, UserManager<User> manager, IMapper mapper)
+        public AuthController(IAuthService service)
         {
-            _service = service;
-            _manager = manager;
-            _mapper = mapper;
+            _authService = service;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register([FromBody] UserForRegisterDto userForRegister)
         {
-            var createdUser = await _service.Register(userForRegister);
-            
-            if(!createdUser.Succeeded)
-                return BadRequest("User was not created");
+            var createdUser = await _authService.Register(userForRegister);
 
-            //return Ok($"User {userForRegister.NickName} created ");
-            return Ok(await _manager.FindByNameAsync(userForRegister.NickName)); //change in future
+            if (!createdUser.Succeeded)
+            {
+                return BadRequest(createdUser);
+            }
+
+            return Ok($"User '{userForRegister.NickName}' created ");
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<LoginViewModel>> Login([FromBody] UserLoginDto userToLogin)
+        {
+            var response = await _authService.Login(userToLogin);
+
+            if (response == null)
+            {
+                return BadRequest("Login failure. Invalid password or username");
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet("confirmEmail")]
+        public async Task<ActionResult<IdentityResult>> ConfirmEmail(string userId, string token)
+        {
+            var res = await _authService.ConfirmEmail(userId, token);
+
+            if (!res.Succeeded)
+            {
+                return BadRequest(res);
+            }
+            return Ok(res);
+        }
+
+        [HttpPost("facebookAuth")]
+        public async Task<ActionResult> Login([FromBody] FacebookLoginDto userFacebookLogin)
+        {
+            var authResponse = await _authService.LoginWithFacebookAsync(userFacebookLogin.AccessToken);
+
+
+            if (authResponse == null)
+            {
+                return BadRequest("Login with Facebook was failed.");
+            }
+
+            return Ok(authResponse);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult> PasswordRecover([FromBody] RecoveryPasswordDataDto data)
+        {
+            var res = await _authService.SendPasswordRecoveryMessage(data.Data);
+
+            if (!res)
+            {
+                return BadRequest("User with this Email or User Name does not exist.");
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult<IdentityResult>> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            var res = await _authService.ResetPassword(resetPasswordDto);
+
+            if (!res.Succeeded)
+            {
+                return BadRequest(res);
+            }
+
+            return Ok(res);
         }
     }
 }
